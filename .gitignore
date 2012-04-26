@@ -1,0 +1,5 @@
+build
+cover_html
+cscope.*
+node_modules
+.coverage_data

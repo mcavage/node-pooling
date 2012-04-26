@@ -1,0 +1,16 @@
+{
+        "name": "pooling",
+        "description": "General purpose resource pool API",
+        "version": "0.1.0",
+        "author": "Mark Cavage <mcavage@gmail.com>",
+        "dependencies": {
+                "bunyan": "0.6.8"
+        },
+        "devDependencies": {
+                "cover": "0.2.8",
+                "nodeunit": "0.7.4"
+        },
+        "scripts": {
+                "test": "./node_modules/.bin/nodeunit ./test/*.test.js | ./node_modules/.bin/bunyan"
+        }
+}
