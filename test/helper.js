@@ -22,7 +22,13 @@ module.exports = {
 
         test: function test(name, tester) {
                 module.parent.exports[name] = function _(t) {
-                        t.end = t.done;
+                        var _done = false;
+                        t.end = function end() {
+                                if (!_done) {
+                                        _done = true;
+                                        t.done();
+                                }
+                        };
                         return (tester(t));
                 };
         },
