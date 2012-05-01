@@ -105,8 +105,8 @@ test('acquire with queue', function (t) {
                 });
         }
 
-        t.equal(POOL.objects.length, MAX_CLIENTS);
         t.equal(POOL.queue.length, 1);
+        t.equal(POOL.resources.length, MAX_CLIENTS);
         POOL.release(clients.shift());
 });
 
@@ -122,7 +122,7 @@ test('acquire after releasing (no queue)', function (t) {
         }
 
         t.equal(POOL.available.length, 0);
-        t.equal(POOL.objects.length, MAX_CLIENTS);
+        t.equal(POOL.resources.length, MAX_CLIENTS);
         t.equal(POOL.queue.length, 0);
 
         clients.reverse();

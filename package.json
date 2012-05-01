@@ -12,7 +12,8 @@
                 "node": ">=0.6"
         },
         "dependencies": {
-                "bunyan": "0.6.8"
+                "bunyan": "0.7.0",
+                "vasync": "1.0.1"
         },
         "devDependencies": {
                 "cover": "0.2.8",
