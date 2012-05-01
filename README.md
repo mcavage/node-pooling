@@ -10,9 +10,9 @@ functionality (namely watching events and health checking).
 # Usage
 
     var EventEmitter = require('events').EventEmitter;
-    var mod_pool = require('pooling');
+    var pooling = require('pooling');
 
-    var pool = mod_pool.createPool({
+    var pool = pooling.createPool({
             checkInterval: 30000, // 30s (default is 30s)
             max: 10,              // Default is 1
             maxIdleTime: 120000,  // 2m (default is 1 hour)
