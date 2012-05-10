@@ -1,7 +1,7 @@
 {
         "name": "pooling",
         "description": "General purpose resource pool API",
-        "version": "0.2.0",
+        "version": "0.2.1",
         "author": "Mark Cavage <mcavage@gmail.com>",
         "main": "lib/index.js",
         "repository": {
@@ -13,7 +13,7 @@
         },
         "dependencies": {
                 "bunyan": "0.7.0",
-                "vasync": "1.0.1"
+                "vasync": "1.1.1"
         },
         "devDependencies": {
                 "cover": "0.2.8",
