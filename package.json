@@ -13,7 +13,7 @@
         },
         "dependencies": {
                 "assert-plus": "0.1.0",
-                "bunyan": "0.13.4",
+                "bunyan": "0.13.5",
                 "vasync": "1.3.2"
         },
         "devDependencies": {
