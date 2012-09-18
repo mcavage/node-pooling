@@ -1,7 +1,7 @@
 {
         "name": "pooling",
         "description": "General purpose resource pool API",
-        "version": "0.3.0",
+        "version": "0.3.1",
         "author": "Mark Cavage <mcavage@gmail.com>",
         "main": "lib/index.js",
         "repository": {
