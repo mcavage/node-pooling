@@ -240,3 +240,27 @@ test('shutdown blocks acquire', function (t) {
                 t.ok(err);
         });
 });
+
+
+test('shutdown kills all clients', function (t) {
+        POOL.acquire(function (err, client) {
+                t.ifError(err);
+                t.ok(client);
+                t.equal(client.id, 1);
+
+                POOL.acquire(function (err2, client2) {
+                        t.ifError(err2);
+                        t.ok(client2);
+                        t.equal(client2.id, 2);
+
+                        POOL.release(client);
+                        POOL.release(client2);
+
+                        t.equal(POOL.available.length, 2);
+                        POOL.shutdown(function () {
+                                t.equal(POOL.resources.length, 0);
+                                t.end();
+                        });
+                });
+        });
+});
