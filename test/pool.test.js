@@ -29,40 +29,49 @@ var REAP_INTERVAL = 15;
 
 before(function setup(callback) {
         var id = 0;
-        POOL = mod_pool.createPool({
-                checkInterval: REAP_INTERVAL,
-                log: helper.log,
-                max: MAX_CLIENTS,
-                maxIdleTime: IDLE_TIMEOUT,
-                name: POOL_NAME,
+        try {
+                POOL = mod_pool.createPool({
+                        checkInterval: REAP_INTERVAL,
+                        log: helper.log,
+                        max: MAX_CLIENTS,
+                        maxIdleTime: IDLE_TIMEOUT,
+                        name: POOL_NAME,
 
-                check: function check(client, cb) {
-                        if ((client.id % 2) !== 0)
-                                return (cb(new Error()));
+                        check: function check(client, cb) {
+                                if ((client.id % 2) !== 0) {
+                                        cb(new Error(client.id + ' % 2 != 0'));
+                                        return;
+                                }
 
-                        return (cb(null));
-                },
+                                cb();
+                        },
 
-                create: function create(cb) {
-                        var client = new EventEmitter();
-                        client.id = ++id;
-                        return (cb(null, client));
-                },
+                        create: function create(cb) {
+                                var client = new EventEmitter();
+                                client.id = ++id;
+                                cb(null, client);
+                        },
 
-                destroy: function destroy(client) {
-                        client.killed = true;
-                }
-        });
+                        destroy: function destroy(client) {
+                                client.killed = true;
+                        }
+                });
+        } catch (e) {
+                console.error(e.stack);
+                callback(e);
+                return;
+        }
 
-        return (callback());
+        callback();
 });
 
 
 after(function teardown(callback) {
-        POOL.shutdown(function () {
-                POOL = null;
-                return (callback());
-        });
+        if (POOL) {
+                POOL.shutdown(callback);
+        } else {
+                callback();
+        }
 });
 
 
@@ -87,6 +96,7 @@ test('acquire and release ok', function (t) {
                 t.end();
         });
 });
+
 
 test('acquire with queue', function (t) {
         var finished = 0;
@@ -141,6 +151,14 @@ test('acquire after releasing (no queue)', function (t) {
 
 
 test('health check reaping', function (t) {
+        var killed = 0;
+        POOL.on('death', function (client) {
+                t.ok(client);
+                t.ok(client.killed);
+                if (++killed === 5)
+                        t.end();
+        });
+
         for (var i = 0; i < MAX_CLIENTS; i++) {
                 POOL.acquire(function (err, client) {
                         t.ifError(err);
@@ -149,14 +167,6 @@ test('health check reaping', function (t) {
                         });
                 });
         }
-
-        var killed = 0;
-        POOL.on('death', function (client) {
-                t.ok(client);
-                t.ok(client.killed);
-                if (++killed === 2)
-                        t.end();
-        });
 });
 
 
@@ -264,3 +274,72 @@ test('shutdown kills all clients', function (t) {
                 });
         });
 });
+
+
+
+// test('long run: queue + remove', function (t) {
+//         var acquired = 0;
+//         var clients = [];
+//         var total = MAX_CLIENTS * 3;
+
+//         function creat(i) {
+//                 POOL.acquire(function (err, client) {
+//                         t.ifError(err);
+//                         if (err)
+//                                 return;
+
+//                         t.ok(client);
+//                         if (i % 10 === 0) {
+//                                 POOL.remove(client);
+//                         } else {
+//                                 clients.push(client);
+//                         }
+
+//                         acquired++;
+//                 });
+//         }
+
+//         function next() {
+//                 console.log(POOL.toString());
+//                 clients.forEach(POOL.release.bind(POOL));
+//                 process.nextTick(function () {
+//                         console.log(POOL.toString());
+//                         process.nextTick(function () {
+//                                 console.log(POOL.toString());
+//                                 console.log(acquired)
+//                                 end();
+//                         });
+//                 });
+
+//         }
+
+//         function end() {
+//                 process.nextTick(function () {
+//                         console.log(require('util').inspect(POOL));
+//                         POOL.shutdown(function () {
+//                                 t.end();
+//                         });
+//                 });
+
+//         }
+
+//         for (var i = 0; i < total; i++)
+//                 creat(i);
+
+//         process.nextTick(next);
+
+//         // t.(POOL.queue.length, 1);
+//         // t.equal(POOL.resources.length, MAX_CLIENTS);
+
+//         // process.nextTick(function () {
+
+//         //         POOL.release(clients.shift());
+//         //         process.nextTick(function () {
+//         //                 clients.forEach(function (c) {
+//         //                         POOL.release(c);
+//         //                 });
+//         //         });
+
+//         // });
+
+// });

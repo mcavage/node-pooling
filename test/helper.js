@@ -4,7 +4,8 @@
 // a common logger for all tests.
 //
 
-var Logger = require('bunyan');
+var bunyan = require('bunyan');
+var once = require('once');
 
 
 
@@ -22,24 +23,20 @@ module.exports = {
 
         test: function test(name, tester) {
                 module.parent.exports[name] = function _(t) {
-                        var _done = false;
-                        t.end = function end() {
-                                if (!_done) {
-                                        _done = true;
-                                        t.done();
-                                }
-                        };
+                        t.end = once(function () {
+                                t.done();
+                        });
                         return (tester(t));
                 };
         },
 
-        log:  new Logger({
+        log:  bunyan.createLogger({
                 level: (process.env.LOG_LEVEL || 'info'),
                 name: process.argv[1],
                 stream: process.stdout,
                 src: true,
                 serializers: {
-                        err: Logger.stdSerializers.err
+                        err: bunyan.stdSerializers.err
                 }
         })
 
