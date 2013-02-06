@@ -232,25 +232,6 @@ test('drain event', function (t) {
 });
 
 
-test('shutdown blocks acquire', function (t) {
-        for (var i = 0; i < MAX_CLIENTS; i++) {
-                POOL.acquire(function (err, client) {
-                        t.ifError(err);
-                        process.nextTick(function () {
-                                POOL.release(client);
-                        });
-                });
-        }
-
-        POOL.shutdown(function () {
-                t.end();
-        });
-
-        POOL.acquire(function (err) {
-                t.ok(err);
-        });
-});
-
 
 test('shutdown kills all clients', function (t) {
         POOL.acquire(function (err, client) {
@@ -276,70 +257,21 @@ test('shutdown kills all clients', function (t) {
 });
 
 
+test('shutdown errors acquire', function (t) {
+        for (var i = 0; i < MAX_CLIENTS; i++) {
+                POOL.acquire(function (err, client) {
+                        t.ifError(err);
+                        process.nextTick(function () {
+                                POOL.release(client);
+                        });
+                });
+        }
 
-// test('long run: queue + remove', function (t) {
-//         var acquired = 0;
-//         var clients = [];
-//         var total = MAX_CLIENTS * 3;
+        POOL.acquire(function (err) {
+                t.ok(err);
+        });
 
-//         function creat(i) {
-//                 POOL.acquire(function (err, client) {
-//                         t.ifError(err);
-//                         if (err)
-//                                 return;
-
-//                         t.ok(client);
-//                         if (i % 10 === 0) {
-//                                 POOL.remove(client);
-//                         } else {
-//                                 clients.push(client);
-//                         }
-
-//                         acquired++;
-//                 });
-//         }
-
-//         function next() {
-//                 console.log(POOL.toString());
-//                 clients.forEach(POOL.release.bind(POOL));
-//                 process.nextTick(function () {
-//                         console.log(POOL.toString());
-//                         process.nextTick(function () {
-//                                 console.log(POOL.toString());
-//                                 console.log(acquired)
-//                                 end();
-//                         });
-//                 });
-
-//         }
-
-//         function end() {
-//                 process.nextTick(function () {
-//                         console.log(require('util').inspect(POOL));
-//                         POOL.shutdown(function () {
-//                                 t.end();
-//                         });
-//                 });
-
-//         }
-
-//         for (var i = 0; i < total; i++)
-//                 creat(i);
-
-//         process.nextTick(next);
-
-//         // t.(POOL.queue.length, 1);
-//         // t.equal(POOL.resources.length, MAX_CLIENTS);
-
-//         // process.nextTick(function () {
-
-//         //         POOL.release(clients.shift());
-//         //         process.nextTick(function () {
-//         //                 clients.forEach(function (c) {
-//         //                         POOL.release(c);
-//         //                 });
-//         //         });
-
-//         // });
-
-// });
+        POOL.shutdown(function () {
+                t.end();
+        });
+});
