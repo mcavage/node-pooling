@@ -4,3 +4,4 @@ cscope.*
 node_modules
 .coverage_data
 *.tgz
+.DS_Store

@@ -13,10 +13,12 @@
         },
         "dependencies": {
                 "assert-plus": "0.1.4",
-                "dtrace-provider": "0.2.8",
                 "bunyan": "0.22.0",
                 "once": "1.3.0",
                 "vasync": "1.4.0"
+        },
+        "optionalDependencies": {
+                "dtrace-provider": "0.2.8"
         },
         "devDependencies": {
                 "cover": "0.2.9",
